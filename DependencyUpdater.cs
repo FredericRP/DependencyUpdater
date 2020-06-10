@@ -87,22 +87,26 @@ public class DependencyUpdater : MonoBehaviour
           }
         }
       }
-      // Launch an AddRequest for each new dependency
-      AddRequest addRequest;
-      int step = 100 / packageToAddList.Count;
-      int progress = 0;
-      EditorUtility.DisplayProgressBar("Adding dependencies", "Retrieving " + packageToAddList.Count + " package(s)", 0 / 100f);
-      for (int i = 0; i < packageToAddList.Count; i++)
+      if (packageToAddList.Count > 0)
       {
-        Debug.Log("> Launching add request for " + packageToAddList[i]);
-        addRequest = Client.Add(packageToAddList[i]);
-        progress += step;
-        progress = Mathf.Clamp(progress, 0, 100);
-        EditorUtility.DisplayProgressBar("Adding dependencies", "Retrieving [" + packageToAddList[i] + "]", progress / 100f);
-        while (addRequest.Status == StatusCode.InProgress) { };
-        Debug.Log("< AddRequest status:" + addRequest.Status);
-        if (addRequest.Status == StatusCode.Failure) {
-          Debug.LogError("Adding package result: " + addRequest.Error.errorCode + ":" + addRequest.Error.message);
+        // Launch an AddRequest for each new dependency
+        AddRequest addRequest;
+        int step = 100 / packageToAddList.Count;
+        int progress = 0;
+        EditorUtility.DisplayProgressBar("Adding dependencies", "Retrieving " + packageToAddList.Count + " package(s)", 0 / 100f);
+        for (int i = 0; i < packageToAddList.Count; i++)
+        {
+          Debug.Log("> Launching add request for " + packageToAddList[i]);
+          addRequest = Client.Add(packageToAddList[i]);
+          progress += step;
+          progress = Mathf.Clamp(progress, 0, 100);
+          EditorUtility.DisplayProgressBar("Adding dependencies", "Retrieving [" + packageToAddList[i] + "]", progress / 100f);
+          while (addRequest.Status == StatusCode.InProgress) { };
+          Debug.Log("< AddRequest status:" + addRequest.Status);
+          if (addRequest.Status == StatusCode.Failure)
+          {
+            Debug.LogError("Adding package result: " + addRequest.Error.errorCode + ":" + addRequest.Error.message);
+          }
         }
       }
       EditorUtility.ClearProgressBar();
